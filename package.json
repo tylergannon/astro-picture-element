@@ -1,6 +1,6 @@
 {
   "name": "astro-picture-element",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Picture element helper to use with experimental Astro assets api.",
   "type": "module",
   "exports": "./index.ts",

@@ -13,7 +13,7 @@ import { pixelDensities } from './mediaConstants';
 
 type MediaQuery = 'min-width' | 'max-width' | 'orientation';
 
-export interface MultiImageSource {
+export interface PictureSource {
   width: number;
   height?: number;
   media: string | Partial<Record<MediaQuery, string>>;
@@ -27,7 +27,7 @@ export interface Props
   format?: ImageOutputFormat;
   width: number;
   height?: number;
-  sources: MultiImageSource[];
+  sources: PictureSource[];
 }
 
 const {

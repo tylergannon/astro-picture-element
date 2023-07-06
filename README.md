@@ -52,6 +52,23 @@ const sources: Array<PictureSource> = [
 <Picture {src} width={200} alt="Nice picture" {sources} />
 ```
 
+## API
+
+The `Picture` element will forward all attributes given to it along to the `<img />` tag
+rendered inside the resulting html5 `<picture>` element, except for the following
+properties:
+
+```
+{
+  src: import('astro').ImageMetadata;
+  sources: Array<PictureSource>;
+  width: number;
+  height?: number;
+  quality?: import('astro').ImageQuality;
+  format?: import('astro').ImageOutputFormat;
+}
+```
+
 ## Interface / Types
 
 The interface looks like this:
@@ -60,7 +77,7 @@ The interface looks like this:
 
 type MediaQuery = 'min-width' | 'max-width' | 'orientation';
 
-export interface MultiImageSource {
+export interface PictureSource {
   width: number;
   height?: number;
   media: string | Partial<Record<MediaQuery, string>>;
@@ -74,7 +91,7 @@ export interface Props
   format?: ImageOutputFormat;
   width: number;
   height?: number;
-  sources: MultiImageSource[];
+  sources: PictureSource[];
 }
 
 ```
