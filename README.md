@@ -1,47 +1,80 @@
-# Astro Starter Kit: Minimal
+# Astro Experimental Assets Picture Element
+
+Hopefully Astro will implement their own new `<Picture />` element by Astro 3.0, but for the
+meantime, it feels a bit lacking.  This is a rough attempt at a `<Picture />` element, utilizing
+Astro's [Experimental assets support](https://docs.astro.build/en/guides/assets/).
+
+## Getting Started
+
+### Install component
 
 ```
-npm create astro@latest -- --template minimal
+pnpm add -D astro-picture-element
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+### Make sure the experimental assets are enabled in your `astro.config.mjs`:
 
 ```
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+export default defineConfig({
+    experimental: {
+        assets: true
+    },
+    image: {
+        service: sharpImageService()
+    }
+});
+
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### Import the components and define source sizes
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+import { Picture, breakpoints, type PictureSource} from 'astro-picture-element'
 
-## 🧞 Commands
+import src from "../assets/cartoon-space-rocket.png";
 
-All commands are run from the root of the project, from a terminal:
+const sources: Array<PictureSource> = [
+  {
+    width: 150,
+    media: { 'max-width': breakpoints.sm },
+  },
+  {
+    width: 175,
+    media: { 'max-width': breakpoints.md },
+  },
+];
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:3000`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+### Use the picture element in your template.
 
-## 👀 Want to learn more?
+```
+<Picture {src} width={200} alt="Nice picture" {sources} />
+```
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Interface / Types
+
+The interface looks like this:
+
+```
+
+type MediaQuery = 'min-width' | 'max-width' | 'orientation';
+
+export interface MultiImageSource {
+  width: number;
+  height?: number;
+  media: string | Partial<Record<MediaQuery, string>>;
+}
+
+export interface Props
+  extends Omit<HTMLAttributes<'img'>, 'src' | 'undefined'> {
+  src: ImageMetadata;
+  alt: string;
+  quality?: ImageQuality;
+  format?: ImageOutputFormat;
+  width: number;
+  height?: number;
+  sources: MultiImageSource[];
+}
+
+```

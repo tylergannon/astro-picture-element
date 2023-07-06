@@ -1,0 +1,25 @@
+---
+import Picture from "../../src/Picture.astro";
+import src from "../assets/cartoon-space-rocket.png";
+import { breakpoints, type PictureSource } from '../../index'
+
+
+const sources: Array<PictureSource> = [
+  {
+    width: 150,
+    media: { 'max-width': breakpoints.sm },
+  },
+  {
+    width: 175,
+    media: { 'max-width': breakpoints.md },
+  },
+];
+
+---
+
+<html lang="en">
+	<body>
+		<h1>Astro</h1>
+		<Picture {src} width={200} alt="Nice picture" {sources} />
+	</body>
+</html>

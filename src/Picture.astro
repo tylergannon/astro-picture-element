@@ -1,0 +1,84 @@
+---
+import { getImage } from 'astro:assets';
+import type {
+  GetImageResult,
+  ImageMetadata,
+  ImageOutputFormat,
+  ImageQuality,
+} from 'astro';
+
+import type { HTMLAttributes } from 'astro/types';
+
+import { pixelDensities } from './mediaConstants';
+
+type MediaQuery = 'min-width' | 'max-width' | 'orientation';
+
+export interface MultiImageSource {
+  width: number;
+  height?: number;
+  media: string | Partial<Record<MediaQuery, string>>;
+}
+
+export interface Props
+  extends Omit<HTMLAttributes<'img'>, 'src' | 'undefined'> {
+  src: ImageMetadata;
+  alt: string;
+  quality?: ImageQuality;
+  format?: ImageOutputFormat;
+  width: number;
+  height?: number;
+  sources: MultiImageSource[];
+}
+
+const {
+  src,
+  sources,
+  width,
+  height = undefined,
+  quality = undefined,
+  format = undefined,
+  ...props
+} = Astro.props;
+
+const main = await getImage({ src, width, height, quality, format });
+
+const transformedSources = await Promise.all(
+  sources.map(async ({ width, height, media }) => {
+    const images = (await Promise.all(
+      pixelDensities.map((d: number) =>
+        getImage({
+          src,
+          width: width * d,
+          height: height ? height * d : undefined,
+          quality,
+          format,
+        })
+      )
+    )) as [GetImageResult, GetImageResult, GetImageResult];
+
+    const _media =
+      typeof media === 'string'
+        ? media
+        : Object.entries(media)
+            .map(([name, val]) => `(${name}: ${val})`)
+            .join(' and ');
+
+    return {
+      srcset: `${images[0].src}, ${images[1].src} 1.5x, ${images[2].src} 2x`,
+      width: images[0].attributes.width!,
+      height: images[0].attributes.height!,
+      media: _media,
+    };
+  })
+);
+---
+
+<picture>
+  {transformedSources.map((data) => <source {...data} />)}
+  <img
+    src={main.src}
+    {...props}
+    height={main.options.height}
+    width={main.options.width}
+  />
+</picture>
