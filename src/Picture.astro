@@ -48,8 +48,8 @@ const transformedSources = await Promise.all(
       pixelDensities.map((d: number) =>
         getImage({
           src,
-          width: width * d,
-          height: height ? height * d : undefined,
+          width: Math.round(width * d),
+          height: height ? Math.round(height * d) : undefined,
           quality,
           format,
         })
